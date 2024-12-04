@@ -4,3 +4,4 @@ acc.csv
 data.csv
 *venv
 .ipynb_checkpoints
+*nodemodules
