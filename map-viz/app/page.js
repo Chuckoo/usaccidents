@@ -4,12 +4,12 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import * as d3 from "d3";
 
-const PointMap = () => {
+const MapComponent = ({ dataUrl, initialView, mapId }) => {
   const mapRef = useRef(null);
 
   useEffect(() => {
     // Initialize the map
-    const map = L.map(mapRef.current).setView([37.8, -96], 4);
+    const map = L.map(mapRef.current).setView(initialView, 8);
 
     // Add OpenStreetMap tiles
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -19,19 +19,25 @@ const PointMap = () => {
     }).addTo(map);
 
     // Load and process the CSV data using D3.js
-    d3.csv("/cluster_df.csv").then((data) => {
+    d3.csv(dataUrl).then((data) => {
       const svgLayer = L.svg().addTo(map); // Add an SVG overlay to the map
       const overlay = d3.select(map.getPanes().overlayPane).select("svg");
 
       // Bind data and append points
       overlay
-        .selectAll("circle") // Use 'circle' to represent points in SVG
+        .selectAll("circle")
         .data(data)
         .enter()
         .append("circle")
-        .attr("cx", (d) => map.latLngToLayerPoint([+d.Lat, +d.Long]).x)
-        .attr("cy", (d) => map.latLngToLayerPoint([+d.Lat, +d.Long]).y)
-        .attr("r", 2) // Use a very small radius to simulate a point
+        .attr(
+          "cx",
+          (d) => map.latLngToLayerPoint([+d.Start_Lat, +d.Start_Lng]).x
+        )
+        .attr(
+          "cy",
+          (d) => map.latLngToLayerPoint([+d.Start_Lat, +d.Start_Lng]).y
+        )
+        .attr("r", 2) // Small radius to simulate a point
         .attr("fill", "blue") // Uniform color for all points
         .attr("opacity", 0.6);
 
@@ -39,16 +45,50 @@ const PointMap = () => {
       const updatePositions = () => {
         overlay
           .selectAll("circle")
-          .attr("cx", (d) => map.latLngToLayerPoint([+d.Lat, +d.Long]).x)
-          .attr("cy", (d) => map.latLngToLayerPoint([+d.Lat, +d.Long]).y);
+          .attr(
+            "cx",
+            (d) => map.latLngToLayerPoint([+d.Start_Lat, +d.Start_Lng]).x
+          )
+          .attr(
+            "cy",
+            (d) => map.latLngToLayerPoint([+d.Start_Lat, +d.Start_Lng]).y
+          );
       };
 
       map.on("moveend", updatePositions); // Update points on map move
       map.on("zoomend", updatePositions); // Update points on zoom
     });
-  }, []);
+  }, [dataUrl, initialView]);
 
-  return <div ref={mapRef} style={{ height: "100vh", width: "100%" }} />;
+  return (
+    <div ref={mapRef} id={mapId} style={{ height: "90vh", width: "100%" }} />
+  );
 };
 
-export default PointMap;
+const DualMapPage = () => {
+  return (
+    <div style={{ display: "flex", flexDirection: "row" }}>
+      {/* First Map */}
+      <div style={{ flex: 1, padding: 10 }}>
+        <div>Accident Zone points in South Carolina</div>
+        <MapComponent
+          dataUrl="/state_df.csv" // First dataset
+          initialView={[33.8361, -81.1637]} // Initial view for map 1
+          mapId="map1"
+        />
+      </div>
+
+      {/* Second Map */}
+      <div style={{ flex: 1, padding: 10 }}>
+        <div>Accident Zone clusters in South Carolina</div>
+        <MapComponent
+          dataUrl="/cluster_df.csv" // Second dataset
+          initialView={[33.8361, -81.1637]} // Initial view for map 2
+          mapId="map2"
+        />
+      </div>
+    </div>
+  );
+};
+
+export default DualMapPage;
