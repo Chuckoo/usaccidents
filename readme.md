@@ -1,14 +1,8 @@
-Title: Alcohol & Accidents in America the complete analysis
-
-Group Name: Team B.I.G
-
-Group number: 02
-
-Member Names:
-Vivek Venkateshprasad(vv002@ucr.edu, 862468868)
-Kyle Russell(kruss020@ucr.edu, 862302220)
-Shubhank Joshi(sjosh052@ucr.edu, 862467912)
-Prathik Somanath(psoma005@ucr.edu, 862467832)
+Contributing Members:
+Vivek Venkateshprasad(vv002@ucr.edu)
+Kyle Russell(kruss020@ucr.edu)
+Shubhank Joshi(sjosh052@ucr.edu)
+Prathik Somanath(psoma005@ucr.edu)
 
 TO RUN THE REACT APP
 
